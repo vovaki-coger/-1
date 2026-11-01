@@ -4,7 +4,7 @@
   "author": "JustMC Pro",
   "floors": [
     {
-      "y": 64,
+      "y": 0,
       "lines": [
         {
           "blocks": [
@@ -43,7 +43,7 @@
       ]
     },
     {
-      "y": 65,
+      "y": 1,
       "lines": [
         {
           "blocks": [
@@ -76,7 +76,7 @@
       ]
     },
     {
-      "y": 66,
+      "y": 2,
       "lines": [
         {
           "blocks": [
@@ -103,7 +103,7 @@
       ]
     },
     {
-      "y": 67,
+      "y": 3,
       "lines": [
         {
           "blocks": [
@@ -132,7 +132,7 @@
       ]
     },
     {
-      "y": 68,
+      "y": 4,
       "lines": [
         {
           "blocks": [
@@ -163,36 +163,32 @@
       ]
     },
     {
-      "y": 69,
+      "y": 5,
       "lines": [
         {
           "blocks": [
             {"type": "entity_event", "args": {"option": "entity_damage_entity"}},
             {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
-            {"type": "if_entity", "args": {"condition": "is_player", "target": "%damager%"}},
-            {"type": "if_entity", "args": {"condition": "is_player", "target": "%entity%"}},
-            {"type": "set_variable", "args": {"action": "add", "variable": "damage_dealt_%damager_uuid%", "value": "%event_damage%"}},
-            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%damager_uuid%", "value": 2}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "last_damager_%entity_uuid%", "value": "%damager_uuid%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "combat_log_timer_%entity_uuid%", "value": 300}}
+            {"type": "set_variable", "args": {"action": "add", "variable": "damage_dealt_%damager_uuid%", "value": 0}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%damager_uuid%", "value": 2}}
           ]
         },
         {
           "blocks": [
             {"type": "player_event", "args": {"option": "player_death"}},
             {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
-            {"type": "set_variable", "args": {"action": "add", "variable": "kills_%last_damager_%victim_uuid%%_uuid%", "value": 1}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "kills_%last_damager_%victim_uuid%", "value": 1}},
             {"type": "set_variable", "args": {"action": "add", "variable": "deaths_%victim_uuid%", "value": 1}},
             {"type": "set_variable", "args": {"action": "set", "variable": "killstreak_%victim_uuid%", "value": 0}},
-            {"type": "set_variable", "args": {"action": "add", "variable": "killstreak_%last_damager_%victim_uuid%%_uuid%", "value": 1}},
-            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%last_damager_%victim_uuid%%_uuid%", "value": 15}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "killstreak_%last_damager_%victim_uuid%", "value": 1}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%last_damager_%victim_uuid%", "value": 15}},
             {"type": "player_action", "args": {"action": "send_message", "target": "@all", "text": "&c%victim% &7убит &c%last_damager_%victim_uuid%%"}}
           ]
         }
       ]
     },
     {
-      "y": 70,
+      "y": 6,
       "lines": [
         {
           "blocks": [
@@ -209,29 +205,21 @@
         {
           "blocks": [
             {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "RESTART"}},
-            {"type": "set_variable", "args": {"action": "purge", "pattern": "*", "type": "all"}},
             {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "WAITING"}},
             {"type": "player_action", "args": {"action": "set_gamemode", "gamemode": "creative"}},
-            {"type": "player_action", "args": {"action": "teleport", "x": 0, "y": 100, "z": 0}}
+            {"type": "player_action", "args": {"action": "spawn_particles", "particle": "crit", "x": 0, "y": 100, "z": 0, "count": 10}}
           ]
         }
       ]
     },
     {
-      "y": 71,
+      "y": 7,
       "lines": [
         {
           "blocks": [
             {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ENDING"}},
             {"type": "set_variable", "args": {"action": "set", "variable": "winner_elo", "value": "%var(elo_%winner_uuid%)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "loser_elo", "value": "%var(elo_%loser_uuid%)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "elo_diff", "value": "%var(loser_elo) - var(winner_elo)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "expected", "value": "1 / (1 + 10 ^ (%var(elo_diff)% / 400))"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "k_factor", "value": 32}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "new_winner_elo", "value": "%var(winner_elo) + %var(k_factor)% * (1 - %var(expected)%)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "new_loser_elo", "value": "%var(loser_elo) + %var(k_factor)% * (0 - %var(expected)%)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "elo_%winner_uuid%", "value": "%var(new_winner_elo)%"}},
-            {"type": "set_variable", "args": {"action": "set", "variable": "elo_%loser_uuid%", "value": "%var(new_loser_elo)%"}}
+            {"type": "set_variable", "args": {"action": "set", "variable": "loser_elo", "value": "%var(elo_%loser_uuid%)%"}}
           ]
         },
         {
