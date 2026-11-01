@@ -1,9 +1,8 @@
 import os
 import time
 import uuid
-import threading
 from datetime import datetime, timedelta
-from flask import Flask, send_from_directory, jsonify, request, render_template_string, abort
+from flask import Flask, send_from_directory, jsonify, request, abort
 
 app = Flask(__name__)
 
@@ -38,14 +37,12 @@ def cleanup_old_files():
 
 
 # Start cleanup thread
+import threading
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()
 
 
-@app.route("/")
-def index():
-    html = """
-<!DOCTYPE html>
+HTML_PAGE = """<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -137,7 +134,7 @@ def index():
                 return;
             }
             selectedFile = file;
-            dropZone.innerHTML = `<p style="color:#38bdf8">✓ Выбран: ${file.name}</p><br>Размер: ${(file.size/1024).toFixed(1)} KB`;
+            dropZone.innerHTML = '<p style="color:#38bdf8">✓ Выбран: ' + file.name + '</p><br>Размер: ' + (file.size/1024).toFixed(1) + ' KB';
             uploadBtn.disabled = false;
             result.classList.remove('show');
         }
@@ -183,8 +180,12 @@ def index():
         });
     </script>
 </body>
-</html>
-    """, 200, {'Content-Type': 'text/html; charset=utf-8'}
+</html>"""
+
+
+@app.route("/")
+def index():
+    return HTML_PAGE, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 
 @app.route("/upload", methods=["POST"])
