@@ -1,0 +1,875 @@
+{
+  "handlers": [
+    {
+      "type": "event",
+      "position": 0,
+      "operations": [
+        {
+          "action": "set_variable_value",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "WAITING"
+              }
+            }
+          ]
+        },
+        {
+          "action": "set_variable_create_list",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "queue",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "values",
+              "value": {
+                "type": "array",
+                "values": []
+              }
+            }
+          ]
+        },
+        {
+          "action": "set_variable_create_map",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "kills",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "keys",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_k",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "values",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_v",
+                "scope": "game"
+              }
+            }
+          ]
+        },
+        {
+          "action": "set_variable_create_map",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "deaths",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "keys",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_k",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "values",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_v",
+                "scope": "game"
+              }
+            }
+          ]
+        },
+        {
+          "action": "set_variable_create_map",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "cooldown",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "keys",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_k",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "values",
+              "value": {
+                "type": "variable",
+                "variable": "dummy_v",
+                "scope": "game"
+              }
+            }
+          ]
+        }
+      ],
+      "event": "world_start"
+    },
+    {
+      "type": "event",
+      "position": 1,
+      "operations": [
+        {
+          "action": "set_variable_value",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "msg",
+                "scope": "local"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "variable",
+                "variable": "event_message",
+                "scope": "local"
+              }
+            }
+          ]
+        },
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "msg",
+                "scope": "local"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "/queue"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "set_variable_append_value",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "queue",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "values",
+                  "value": {
+                    "type": "array",
+                    "values": [
+                      {
+                        "type": "variable",
+                        "variable": "player_uuid",
+                        "scope": "local"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "action": "player_send_message",
+              "values": [
+                {
+                  "name": "messages",
+                  "value": {
+                    "type": "array",
+                    "values": [
+                      {
+                        "type": "text",
+                        "text": "${green}В очереди!"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "merging",
+                  "value": {
+                    "type": "enum",
+                    "enum": "SPACES"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "msg",
+                "scope": "local"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "/leave"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "player_send_message",
+              "values": [
+                {
+                  "name": "messages",
+                  "value": {
+                    "type": "array",
+                    "values": [
+                      {
+                        "type": "text",
+                        "text": "${red}Вышли."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "merging",
+                  "value": {
+                    "type": "enum",
+                    "enum": "SPACES"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "event": "player_chat"
+    },
+    {
+      "type": "repeat",
+      "position": 2,
+      "operations": [
+        {
+          "action": "control_wait",
+          "values": [
+            {
+              "name": "ticks",
+              "value": {
+                "type": "number",
+                "number": 20
+              }
+            }
+          ]
+        },
+        {
+          "action": "if_variable_greater_or_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "queue",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "number",
+                "number": 2
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "set_variable_value",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "match_state",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "value",
+                  "value": {
+                    "type": "text",
+                    "text": "STARTING"
+                  }
+                }
+              ]
+            },
+            {
+              "action": "control_end_thread",
+              "values": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "position": 3,
+      "operations": [
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "ACTIVE"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "if_player_is_holding",
+              "values": [
+                {
+                  "name": "items",
+                  "value": {
+                    "type": "array",
+                    "values": [
+                      {
+                        "type": "item",
+                        "item": "diamond_sword"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "operations": [
+                {
+                  "action": "if_variable_equals",
+                  "values": [
+                    {
+                      "name": "variable",
+                      "value": {
+                        "type": "variable",
+                        "variable": "cooldown",
+                        "scope": "game"
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "type": "number",
+                        "number": 0
+                      }
+                    }
+                  ],
+                  "operations": [
+                    {
+                      "action": "entity_damage",
+                      "values": [
+                        {
+                          "name": "target",
+                          "value": {
+                            "type": "variable",
+                            "variable": "victim",
+                            "scope": "local"
+                          }
+                        },
+                        {
+                          "name": "damage",
+                          "value": {
+                            "type": "number",
+                            "number": 8
+                          }
+                        },
+                        {
+                          "name": "knockback",
+                          "value": {
+                            "type": "number",
+                            "number": 2
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "action": "set_variable_value",
+                      "values": [
+                        {
+                          "name": "variable",
+                          "value": {
+                            "type": "variable",
+                            "variable": "cooldown",
+                            "scope": "game"
+                          }
+                        },
+                        {
+                          "name": "value",
+                          "value": {
+                            "type": "number",
+                            "number": 80
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "action": "player_play_sound",
+                      "values": [
+                        {
+                          "name": "sound",
+                          "value": {
+                            "type": "sound",
+                            "sound": "entity.player.attack.strong"
+                          }
+                        },
+                        {
+                          "name": "volume",
+                          "value": {
+                            "type": "number",
+                            "number": 1
+                          }
+                        },
+                        {
+                          "name": "pitch",
+                          "value": {
+                            "type": "number",
+                            "number": 1
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "event": "player_right_click"
+    },
+    {
+      "type": "repeat",
+      "position": 4,
+      "operations": [
+        {
+          "action": "control_wait",
+          "values": [
+            {
+              "name": "ticks",
+              "value": {
+                "type": "number",
+                "number": 1
+              }
+            }
+          ]
+        },
+        {
+          "action": "set_variable_value",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "cooldown",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "number",
+                "number": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "position": 5,
+      "operations": [
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "ACTIVE"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "set_variable_increment",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "kills",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "value",
+                  "value": {
+                    "type": "number",
+                    "number": 1
+                  }
+                }
+              ]
+            },
+            {
+              "action": "set_variable_increment",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "deaths",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "value",
+                  "value": {
+                    "type": "number",
+                    "number": 1
+                  }
+                }
+              ]
+            },
+            {
+              "action": "player_send_message",
+              "values": [
+                {
+                  "name": "target",
+                  "value": {
+                    "type": "text",
+                    "text": "@all"
+                  }
+                },
+                {
+                  "name": "messages",
+                  "value": {
+                    "type": "array",
+                    "values": [
+                      {
+                        "type": "text",
+                        "text": "&c%player% &7убит &c%damager%"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "merging",
+                  "value": {
+                    "type": "enum",
+                    "enum": "SPACES"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "event": "player_death"
+    },
+    {
+      "type": "repeat",
+      "position": 6,
+      "operations": [
+        {
+          "action": "control_wait",
+          "values": [
+            {
+              "name": "ticks",
+              "value": {
+                "type": "number",
+                "number": 40
+              }
+            }
+          ]
+        },
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "ACTIVE"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "if_variable_less_than_or_equals",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "alive_players",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "value",
+                  "value": {
+                    "type": "number",
+                    "number": 1
+                  }
+                }
+              ],
+              "operations": [
+                {
+                  "action": "set_variable_value",
+                  "values": [
+                    {
+                      "name": "variable",
+                      "value": {
+                        "type": "variable",
+                        "variable": "match_state",
+                        "scope": "game"
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "type": "text",
+                        "text": "ENDING"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "action": "player_send_title",
+                  "values": [
+                    {
+                      "name": "title",
+                      "value": {
+                        "type": "text",
+                        "text": "&6MATCH OVER"
+                      }
+                    },
+                    {
+                      "name": "subtitle",
+                      "value": {
+                        "type": "text",
+                        "text": "&2Победитель: %winner%"
+                      }
+                    },
+                    {
+                      "name": "stay",
+                      "value": {
+                        "type": "number",
+                        "number": 100
+                      }
+                    }
+                  ]
+                },
+                {
+                  "action": "control_wait",
+                  "values": [
+                    {
+                      "name": "ticks",
+                      "value": {
+                        "type": "number",
+                        "number": 600
+                      }
+                    }
+                  ]
+                },
+                {
+                  "action": "set_variable_value",
+                  "values": [
+                    {
+                      "name": "variable",
+                      "value": {
+                        "type": "variable",
+                        "variable": "match_state",
+                        "scope": "game"
+                      }
+                    },
+                    {
+                      "name": "value",
+                      "value": {
+                        "type": "text",
+                        "text": "RESTART"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "RESTART"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "set_variable_value",
+              "values": [
+                {
+                  "name": "variable",
+                  "value": {
+                    "type": "variable",
+                    "variable": "match_state",
+                    "scope": "game"
+                  }
+                },
+                {
+                  "name": "value",
+                  "value": {
+                    "type": "text",
+                    "text": "WAITING"
+                  }
+                }
+              ]
+            },
+            {
+              "action": "player_set_gamemode",
+              "values": [
+                {
+                  "name": "gamemode",
+                  "value": {
+                    "type": "text",
+                    "text": "creative"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "repeat",
+      "position": 7,
+      "operations": [
+        {
+          "action": "control_wait",
+          "values": [
+            {
+              "name": "ticks",
+              "value": {
+                "type": "number",
+                "number": 5
+              }
+            }
+          ]
+        },
+        {
+          "action": "if_variable_equals",
+          "values": [
+            {
+              "name": "variable",
+              "value": {
+                "type": "variable",
+                "variable": "match_state",
+                "scope": "game"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "type": "text",
+                "text": "ACTIVE"
+              }
+            }
+          ],
+          "operations": [
+            {
+              "action": "player_send_action_bar",
+              "values": [
+                {
+                  "name": "text",
+                  "value": {
+                    "type": "text",
+                    "text": "&cHP %health% / 20  &bUlt %cooldown%"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
