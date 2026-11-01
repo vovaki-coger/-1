@@ -221,10 +221,11 @@ def serve_file(filename):
 
     # Detect mimetype
     mimetype = "application/json" if filename.endswith(".json") else "application/octet-stream"
-    response = send_from_directory(FILES_DIR, filename, mimetype=mimetype)
+    response = send_from_directory(FILES_DIR, filename, mimetype=mimetype, as_attachment=True)
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET"
     response.headers["Cache-Control"] = "no-cache"
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
 
 
