@@ -1,0 +1,270 @@
+{
+  "version": 2,
+  "name": "Ultimate PvP Arena",
+  "author": "JustMC Pro",
+  "floors": [
+    {
+      "y": 64,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "world_event", "args": {"option": "world_start"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "WAITING"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "queue_players", "value": []}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "active_players", "value": {}}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_timer", "value": 0}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "forever"}},
+            {"type": "control", "args": {"action": "wait", "ticks": 20}},
+            {"type": "if_variable", "args": {"variable": "queue_players.length", "operator": ">=", "value": 2}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "STARTING"}},
+            {"type": "control", "args": {"action": "stop"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_chat"}},
+            {"type": "if_variable", "args": {"variable": "%player_message%", "operator": "starts_with", "value": "/queue"}},
+            {"type": "set_variable", "args": {"action": "list_add", "variable": "queue_players", "value": "%player_uuid%"}},
+            {"type": "player_action", "args": {"action": "send_message", "text": "&aВы в очереди!", "target": "%player%"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_chat"}},
+            {"type": "if_variable", "args": {"variable": "%player_message%", "operator": "starts_with", "value": "/leave"}},
+            {"type": "set_variable", "args": {"action": "list_remove", "variable": "queue_players", "value": "%player_uuid%"}},
+            {"type": "player_action", "args": {"action": "send_message", "text": "&cВы покинули очередь", "target": "%player%"}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 65,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "forever"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "STARTING"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "CLASS_SELECT"}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&6Выберите класс", "subtitle": "&7TANK, MAGE, ASSASSIN, ARCHER, SUPPORT, BERSERKER", "stay": 600}},
+            {"type": "control", "args": {"action": "wait", "ticks": 600}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "COUNTDOWN"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "count", "count": 5}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "COUNTDOWN"}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&c&l%var(countdown_remaining)%", "stay": 20}},
+            {"type": "control", "args": {"action": "wait", "ticks": 20}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "COUNTDOWN"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "ACTIVE"}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&a&lFIGHT!", "stay": 40}},
+            {"type": "player_action", "args": {"action": "set_gamemode", "gamemode": "survival"}},
+            {"type": "player_action", "args": {"action": "set_health", "value": 20}},
+            {"type": "player_action", "args": {"action": "give_item", "item": "diamond_sword", "count": 1}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 66,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_right_click"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_player", "args": {"condition": "holding_item", "item": "diamond_sword"}},
+            {"type": "if_variable", "args": {"variable": "cooldown_q_%player_uuid%", "operator": "=", "value": 0}},
+            {"type": "select", "args": {"type": "nearest_entity", "radius": 3, "entity_type": "player"}},
+            {"type": "entity_action", "args": {"action": "damage", "target": "%selected%", "damage": 8, "knockback": 2}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "cooldown_q_%player_uuid%", "value": 80}},
+            {"type": "player_action", "args": {"action": "play_sound", "sound": "entity.player.attack.strong", "volume": 1, "pitch": 1}},
+            {"type": "player_action", "args": {"action": "spawn_particles", "particle": "crit", "count": 10, "speed": 0.2}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "forever"}},
+            {"type": "control", "args": {"action": "wait", "ticks": 1}},
+            {"type": "set_variable", "args": {"action": "subtract", "variable": "cooldown_q_%player_uuid%", "value": 1}},
+            {"type": "if_variable", "args": {"variable": "cooldown_q_%player_uuid%", "operator": "<", "value": 0}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "cooldown_q_%player_uuid%", "value": 0}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 67,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_sneak"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_variable", "args": {"variable": "cooldown_e_%player_uuid%", "operator": "=", "value": 0}},
+            {"type": "if_player", "args": {"condition": "has_class", "class": "ASSASSIN"}},
+            {"type": "player_action", "args": {"action": "add_effect", "effect": "invisibility", "duration": 60, "amplifier": 0}},
+            {"type": "player_action", "args": {"action": "add_effect", "effect": "speed", "duration": 60, "amplifier": 1}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "cooldown_e_%player_uuid%", "value": 300}},
+            {"type": "player_action", "args": {"action": "send_actionbar", "text": "&bСтелс активирован!"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_sneak"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_variable", "args": {"variable": "cooldown_e_%player_uuid%", "operator": "=", "value": 0}},
+            {"type": "if_player", "args": {"condition": "has_class", "class": "TANK"}},
+            {"type": "player_action", "args": {"action": "add_effect", "effect": "resistance", "duration": 100, "amplifier": 1}},
+            {"type": "player_action", "args": {"action": "add_effect", "effect": "slowness", "duration": 100, "amplifier": 1}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "cooldown_e_%player_uuid%", "value": 400}},
+            {"type": "player_action", "args": {"action": "send_actionbar", "text": "&cЩит поднят!"}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 68,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_drop_item"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_variable", "args": {"variable": "ultimate_charge_%player_uuid%", "operator": ">=", "value": 100}},
+            {"type": "if_player", "args": {"condition": "has_class", "class": "MAGE"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "ultimate_charge_%player_uuid%", "value": 0}},
+            {"type": "world_action", "args": {"action": "spawn_particles", "particle": "large_smoke", "x": "%player_x%", "y": "%player_y+30%", "z": "%player_z%", "count": 50}},
+            {"type": "control", "args": {"action": "wait", "ticks": 40}},
+            {"type": "world_action", "args": {"action": "explode", "x": "%player_x%", "y": "%player_y%", "z": "%player_z%", "power": 4, "fire": true}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&b&lMETEOR STORM", "stay": 60}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_drop_item"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_variable", "args": {"variable": "ultimate_charge_%player_uuid%", "operator": ">=", "value": 100}},
+            {"type": "if_player", "args": {"condition": "has_class", "class": "ASSASSIN"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "ultimate_charge_%player_uuid%", "value": 0}},
+            {"type": "select", "args": {"type": "nearest_player", "radius": 15}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "death_mark_%selected_uuid%", "value": 600}},
+            {"type": "entity_action", "args": {"action": "add_effect", "target": "%selected%", "effect": "glowing", "duration": 600, "amplifier": 0}},
+            {"type": "player_action", "args": {"action": "send_actionbar", "text": "&c&lDEATH MARK на %selected%!"}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 69,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "entity_event", "args": {"option": "entity_damage_entity"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_entity", "args": {"condition": "is_player", "target": "%damager%"}},
+            {"type": "if_entity", "args": {"condition": "is_player", "target": "%entity%"}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "damage_dealt_%damager_uuid%", "value": "%event_damage%"}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%damager_uuid%", "value": 2}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "last_damager_%entity_uuid%", "value": "%damager_uuid%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "combat_log_timer_%entity_uuid%", "value": 300}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "player_event", "args": {"option": "player_death"}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "kills_%last_damager_%victim_uuid%%_uuid%", "value": 1}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "deaths_%victim_uuid%", "value": 1}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "killstreak_%victim_uuid%", "value": 0}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "killstreak_%last_damager_%victim_uuid%%_uuid%", "value": 1}},
+            {"type": "set_variable", "args": {"action": "add", "variable": "ultimate_charge_%last_damager_%victim_uuid%%_uuid%", "value": 15}},
+            {"type": "player_action", "args": {"action": "send_message", "target": "@all", "text": "&c%victim% &7убит &c%last_damager_%victim_uuid%%"}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 70,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "forever"}},
+            {"type": "control", "args": {"action": "wait", "ticks": 40}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "if_variable", "args": {"variable": "alive_players_count", "operator": "<=", "value": 1}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "ENDING"}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&6&lMATCH OVER", "subtitle": "&eПобедитель: %last_alive_player%", "stay": 100}},
+            {"type": "control", "args": {"action": "wait", "ticks": 600}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "RESTART"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "RESTART"}},
+            {"type": "set_variable", "args": {"action": "purge", "pattern": "*", "type": "all"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "match_state", "value": "WAITING"}},
+            {"type": "player_action", "args": {"action": "set_gamemode", "gamemode": "creative"}},
+            {"type": "player_action", "args": {"action": "teleport", "x": 0, "y": 100, "z": 0}}
+          ]
+        }
+      ]
+    },
+    {
+      "y": 71,
+      "lines": [
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ENDING"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "winner_elo", "value": "%var(elo_%winner_uuid%)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "loser_elo", "value": "%var(elo_%loser_uuid%)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "elo_diff", "value": "%var(loser_elo) - var(winner_elo)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "expected", "value": "1 / (1 + 10 ^ (%var(elo_diff)% / 400))"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "k_factor", "value": 32}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "new_winner_elo", "value": "%var(winner_elo) + %var(k_factor)% * (1 - %var(expected)%)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "new_loser_elo", "value": "%var(loser_elo) + %var(k_factor)% * (0 - %var(expected)%)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "elo_%winner_uuid%", "value": "%var(new_winner_elo)%"}},
+            {"type": "set_variable", "args": {"action": "set", "variable": "elo_%loser_uuid%", "value": "%var(new_loser_elo)%"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "repeat", "args": {"type": "forever"}},
+            {"type": "control", "args": {"action": "wait", "ticks": 5}},
+            {"type": "if_variable", "args": {"variable": "match_state", "operator": "=", "value": "ACTIVE"}},
+            {"type": "player_action", "args": {"action": "send_actionbar", "text": "&c❤ %var(health_%%player_uuid%%)% / 20  &b✦ %var(mana_%%player_uuid%%)% / 100  &e⚡ %var(ultimate_charge_%%player_uuid%%)%%"}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "killstreak_%player_uuid%", "operator": "=", "value": 3}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&e&lKILLING SPREE!", "stay": 60}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "killstreak_%player_uuid%", "operator": "=", "value": 5}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&6&lRAMPAGE!", "stay": 60}},
+            {"type": "world_action", "args": {"action": "play_sound", "sound": "entity.ender_dragon.growl", "x": "%player_x%", "y": "%player_y%", "z": "%player_z%", "volume": 2, "pitch": 0.8}}
+          ]
+        },
+        {
+          "blocks": [
+            {"type": "if_variable", "args": {"variable": "killstreak_%player_uuid%", "operator": ">=", "value": 10}},
+            {"type": "player_action", "args": {"action": "send_title", "title": "&c&lUNSTOPPABLE!", "stay": 80}},
+            {"type": "world_action", "args": {"action": "spawn_particles", "particle": "lightning", "x": "%player_x%", "y": "%player_y%+2", "z": "%player_z%", "count": 1}}
+          ]
+        }
+      ]
+    }
+  ],
+  "functions": {},
+  "processes": {}
+}
